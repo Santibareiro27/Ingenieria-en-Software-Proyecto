@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
+const API_URL = "http://localhost:3000/api";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -11,7 +13,7 @@ import { Plus, Search, Edit, Trash2, MapPin, Calendar, User } from "lucide-react
 import { toast } from "sonner";
 
 interface Proyecto {
-  id: string;
+  id: number;
   nombre: string;
   tipo: string;
   ubicacion: string;
@@ -22,91 +24,101 @@ interface Proyecto {
   presupuesto: number;
 }
 
-export default function ProyectosPage() {
-  const [proyectos, setProyectos] = useState<Proyecto[]>([
-    {
-      id: "1",
-      nombre: "Obra Vial Ruta 14",
-      tipo: "Infraestructura Vial",
-      ubicacion: "Posadas, Misiones",
-      encargado: "Ing. Roberto Suénaga",
-      fechaInicio: "2026-01-15",
-      estado: "en_ejecucion",
-      avance: 65,
-      presupuesto: 15000000
-    },
-    {
-      id: "2",
-      nombre: "Edificio Residencial Los Pinos",
-      tipo: "Construcción Edilicia",
-      ubicacion: "Oberá, Misiones",
-      encargado: "Arq. Nancy Ganz",
-      fechaInicio: "2025-11-20",
-      estado: "en_ejecucion",
-      avance: 45,
-      presupuesto: 8500000
-    },
-    {
-      id: "3",
-      nombre: "Puente Posadas-Encarnación",
-      tipo: "Infraestructura Vial",
-      ubicacion: "Posadas, Misiones",
-      encargado: "Ing. Briant Gauna",
-      fechaInicio: "2025-09-01",
-      estado: "en_ejecucion",
-      avance: 78,
-      presupuesto: 25000000
-    },
-  ]);
+function mapEstado(estadoDB: string): Proyecto["estado"] {
+  const map: Record<string, Proyecto["estado"]> = {
+    Creado: "planificacion",
+    Planificado: "planificacion",
+    EnEjecucion: "en_ejecucion",
+    Pausado: "pausada",
+    EnRevision: "en_ejecucion",
+    Finalizado: "finalizada",
+    Cancelado: "finalizada",
+  };
+  return map[estadoDB] ?? "planificacion";
+}
 
+export default function ProyectosPage() {
+  const [proyectos, setProyectos] = useState<Proyecto[]>([]);
+  const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [formData, setFormData] = useState({
     nombre: "",
     tipo: "",
     ubicacion: "",
-    encargado: "",
     fechaInicio: "",
     presupuesto: ""
   });
+
+  useEffect(() => {
+    fetch(`${API_URL}/proyectos`)
+      .then(res => res.json())
+      .then((data: Array<Record<string, unknown>>) => {
+        setProyectos(data.map(p => ({
+          id: p.id_proyecto as number,
+          nombre: p.nombre as string,
+          tipo: p.tipo as string,
+          ubicacion: p.ubicacion as string,
+          encargado: (p.encargado as string) ?? "Sin asignar",
+          fechaInicio: p.fecha_inicio as string,
+          estado: mapEstado(p.estado as string),
+          avance: 0,
+          presupuesto: Number(p.presupuesto_estimado),
+        })));
+      })
+      .catch(() => toast.error("No se pudo conectar con el servidor"))
+      .finally(() => setLoading(false));
+  }, []);
 
   const filteredProyectos = proyectos.filter(proyecto =>
     proyecto.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
     proyecto.ubicacion.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    const nuevoProyecto: Proyecto = {
-      id: Date.now().toString(),
-      nombre: formData.nombre,
-      tipo: formData.tipo,
-      ubicacion: formData.ubicacion,
-      encargado: formData.encargado,
-      fechaInicio: formData.fechaInicio,
-      estado: "planificacion",
-      avance: 0,
-      presupuesto: parseFloat(formData.presupuesto)
-    };
-
-    setProyectos([...proyectos, nuevoProyecto]);
-    setIsDialogOpen(false);
-    setFormData({
-      nombre: "",
-      tipo: "",
-      ubicacion: "",
-      encargado: "",
-      fechaInicio: "",
-      presupuesto: ""
-    });
-    
-    toast.success("Proyecto registrado con éxito");
+    try {
+      const res = await fetch(`${API_URL}/proyectos`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nombre: formData.nombre,
+          tipo: formData.tipo,
+          ubicacion: formData.ubicacion,
+          fecha_inicio: formData.fechaInicio,
+          presupuesto_estimado: parseFloat(formData.presupuesto),
+          id_responsable: 1,
+        }),
+      });
+      if (!res.ok) throw new Error();
+      const nuevo = await res.json();
+      setProyectos(prev => [...prev, {
+        id: nuevo.id_proyecto,
+        nombre: nuevo.nombre,
+        tipo: nuevo.tipo,
+        ubicacion: nuevo.ubicacion,
+        encargado: "Admin Sistema",
+        fechaInicio: nuevo.fecha_inicio,
+        estado: "planificacion",
+        avance: 0,
+        presupuesto: nuevo.presupuesto_estimado,
+      }]);
+      setIsDialogOpen(false);
+      setFormData({ nombre: "", tipo: "", ubicacion: "", fechaInicio: "", presupuesto: "" });
+      toast.success("Proyecto registrado con éxito");
+    } catch {
+      toast.error("Error al registrar el proyecto");
+    }
   };
 
-  const handleDelete = (id: string) => {
-    setProyectos(proyectos.filter(p => p.id !== id));
-    toast.success("Proyecto eliminado correctamente");
+  const handleDelete = async (id: number) => {
+    try {
+      await fetch(`${API_URL}/proyectos/${id}`, { method: "DELETE" });
+      setProyectos(prev => prev.filter(p => p.id !== id));
+      toast.success("Proyecto eliminado correctamente");
+    } catch {
+      toast.error("Error al eliminar el proyecto");
+    }
   };
 
   const getEstadoBadge = (estado: Proyecto["estado"]) => {
@@ -162,10 +174,10 @@ export default function ProyectosPage() {
                       <SelectValue placeholder="Seleccionar tipo" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="infraestructura">Infraestructura Vial</SelectItem>
-                      <SelectItem value="edificacion">Construcción Edilicia</SelectItem>
-                      <SelectItem value="hidraulica">Obra Hidráulica</SelectItem>
-                      <SelectItem value="mantenimiento">Mantenimiento</SelectItem>
+                      <SelectItem value="Infraestructura Vial">Infraestructura Vial</SelectItem>
+                      <SelectItem value="Construcción Edilicia">Construcción Edilicia</SelectItem>
+                      <SelectItem value="Obra Hidráulica">Obra Hidráulica</SelectItem>
+                      <SelectItem value="Mantenimiento">Mantenimiento</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -176,16 +188,6 @@ export default function ProyectosPage() {
                     value={formData.ubicacion}
                     onChange={(e) => setFormData({...formData, ubicacion: e.target.value})}
                     placeholder="Ciudad, Provincia"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="encargado">Encargado de Obra *</Label>
-                  <Input
-                    id="encargado"
-                    value={formData.encargado}
-                    onChange={(e) => setFormData({...formData, encargado: e.target.value})}
-                    placeholder="Nombre del encargado"
                     required
                   />
                 </div>
@@ -240,6 +242,9 @@ export default function ProyectosPage() {
       </Card>
 
       {/* Projects Grid */}
+      {loading && (
+        <div className="text-center text-muted-foreground py-12">Cargando proyectos...</div>
+      )}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {filteredProyectos.map((proyecto) => (
           <Card key={proyecto.id}>
