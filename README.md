@@ -17,7 +17,13 @@ Alcance del sprint: **RF01** (registrar/modificar/eliminar proyectos) y **RF02**
 ## Requisitos previos
 
 - **Node.js** (LTS). El instalador está en `Intalar/node-v24.16.0-x64.msi`, o bajalo de [nodejs.org](https://nodejs.org).
-- **MariaDB** (o MySQL) corriendo localmente. Se puede administrar con **DBeaver**.
+- **MariaDB** corriendo localmente (también funciona con MySQL: el SQL usa solo
+  sintaxis compatible con ambos). Verificado sobre **MariaDB 12.3**. Se puede
+  administrar con **DBeaver**.
+
+> **Puerto de la base:** MariaDB usa por defecto el puerto **3306**. Si la
+> instalaste en otro puerto para convivir con un MySQL ya existente (ej. **3307**),
+> ajustá `DB_PORT` en `BACK/.env` acorde.
 
 ---
 
