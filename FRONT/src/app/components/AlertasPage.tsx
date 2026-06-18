@@ -225,7 +225,7 @@ export default function AlertasPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Alerta de Desvío de Avance (CU10)</CardTitle>
+            <CardTitle>Alerta de Desvío de Avance</CardTitle>
             <CardDescription>Se genera cuando el avance real es inferior al planificado</CardDescription>
           </CardHeader>
           <CardContent>
@@ -241,7 +241,7 @@ export default function AlertasPage() {
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle>Alerta de Sobrecostos (CU11)</CardTitle>
+            <CardTitle>Alerta de Sobrecostos</CardTitle>
             <CardDescription>Se activa cuando se exceden cantidades presupuestadas</CardDescription>
           </CardHeader>
           <CardContent>
@@ -257,7 +257,7 @@ export default function AlertasPage() {
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle>Desviación Presupuesto vs Avance (CU23)</CardTitle>
+            <CardTitle>Desviación Presupuesto vs Avance</CardTitle>
             <CardDescription>Detecta diferencias entre gasto ejecutado y avance físico</CardDescription>
           </CardHeader>
           <CardContent>
@@ -273,7 +273,7 @@ export default function AlertasPage() {
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle>Consumo Anómalo (CU21)</CardTitle>
+            <CardTitle>Consumo Anómalo</CardTitle>
             <CardDescription>Identifica consumos inconsistentes respecto al rendimiento</CardDescription>
           </CardHeader>
           <CardContent>

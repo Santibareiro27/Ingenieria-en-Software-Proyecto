@@ -1,4 +1,4 @@
-import { Outlet, Link, useLocation } from "react-router";
+import { Outlet, Link, useLocation, useNavigate } from "react-router";
 import {
   LayoutDashboard,
   FolderKanban,
@@ -10,11 +10,12 @@ import {
   Wrench,
   HardHat,
   ChevronRight,
-  Wifi,
   Clock,
+  LogOut,
 } from "lucide-react";
 import { Toaster } from "./ui/sonner";
 import { useState, useEffect } from "react";
+import { getUsuario, clearSession } from "../auth/session";
 
 const navItems = [
   { path: "/", label: "Dashboard", icon: LayoutDashboard, abbr: "DSH" },
@@ -40,9 +41,29 @@ function LiveClock() {
   );
 }
 
+// Iniciales para el avatar (ej. "Admin Sistema" -> "AS").
+function iniciales(nombre: string): string {
+  return nombre
+    .split(" ")
+    .map((p) => p[0])
+    .filter(Boolean)
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+}
+
 export default function Root() {
   const location = useLocation();
+  const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  // Usuario de la sesion actual (guardado al iniciar sesion).
+  const usuario = getUsuario();
+
+  function handleLogout() {
+    clearSession();
+    navigate("/login", { replace: true });
+  }
 
   const isActive = (path: string) => {
     if (path === "/") return location.pathname === path;
@@ -185,19 +206,24 @@ export default function Root() {
                 fontFamily: "'JetBrains Mono', monospace",
               }}
             >
-              UA
+              {usuario ? iniciales(usuario.nombre) : "??"}
             </div>
             <div style={{ lineHeight: 1.3, overflow: "hidden" }}>
               <div style={{ fontSize: "12px", fontWeight: 600, color: "var(--foreground)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                Usuario Admin.
+                {usuario?.nombre ?? "Sin sesion"}
               </div>
               <div style={{ fontSize: "10px", color: "var(--muted-foreground)", letterSpacing: "0.04em" }}>
-                Administrativo
+                {usuario?.rol ?? ""}
               </div>
             </div>
-            <div className="ml-auto flex items-center" style={{ color: "#22c55e" }}>
-              <Wifi style={{ width: "12px", height: "12px" }} />
-            </div>
+            <button
+              onClick={handleLogout}
+              title="Cerrar sesion"
+              className="ml-auto flex items-center"
+              style={{ color: "var(--muted-foreground)", background: "transparent", border: "none", cursor: "pointer", padding: "4px" }}
+            >
+              <LogOut style={{ width: "14px", height: "14px" }} />
+            </button>
           </div>
         </div>
 

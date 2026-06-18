@@ -1,5 +1,7 @@
 import { createBrowserRouter } from "react-router";
 import Root from "./components/Root";
+import LoginPage from "./components/LoginPage";
+import RequireAuth from "./auth/RequireAuth";
 import Dashboard from "./components/Dashboard";
 import ProyectosPage from "./components/ProyectosPage";
 import SeguimientoPage from "./components/SeguimientoPage";
@@ -11,9 +13,16 @@ import MaquinariaPage from "./components/MaquinariaPage";
 import NotFound from "./components/NotFound";
 
 export const router = createBrowserRouter([
+  // Ruta publica: pantalla de login (sin sidebar/layout).
+  { path: "/login", Component: LoginPage },
+  // Todo lo demas queda protegido: RequireAuth redirige a /login si no hay sesion.
   {
     path: "/",
-    Component: Root,
+    element: (
+      <RequireAuth>
+        <Root />
+      </RequireAuth>
+    ),
     children: [
       { index: true, Component: Dashboard },
       { path: "proyectos", Component: ProyectosPage },

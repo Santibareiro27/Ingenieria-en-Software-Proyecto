@@ -138,7 +138,7 @@ export default function ProyectosPage() {
         <div>
           <h2 className="text-3xl font-bold text-foreground">Gestión de Proyectos</h2>
           <p className="text-muted-foreground mt-2">
-            Registrar, modificar y organizar proyectos de obra (CU1, CU2, CU3)
+            Registrar, modificar y organizar proyectos de obra
           </p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
