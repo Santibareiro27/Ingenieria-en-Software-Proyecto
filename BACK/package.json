@@ -6,7 +6,10 @@
     "dev": "ts-node-dev --respawn --transpile-only src/app.ts",
     "build": "tsc",
     "start": "node dist/app.js",
-    "seed": "ts-node-dev --transpile-only src/seed.ts"
+    "migrate": "ts-node-dev --transpile-only src/migrate.ts",
+    "migrate:prod": "node dist/migrate.js",
+    "seed": "ts-node-dev --transpile-only src/seed.ts",
+    "seed:prod": "node dist/seed.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
