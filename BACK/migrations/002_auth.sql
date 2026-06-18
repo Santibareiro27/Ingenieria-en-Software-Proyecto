@@ -18,10 +18,13 @@
 --   de forma segura, ejecutar el seed del backend:  npm run seed   (carpeta BACK)
 
 -- 1) Auditoria minima: registrar cuando se creo cada usuario.
---    "IF NOT EXISTS" hace que la migracion se pueda correr mas de una vez sin error
---    (sintaxis soportada por MariaDB).
+--    NOTA: se usa "ADD COLUMN" estandar (sin "IF NOT EXISTS") para que sea
+--    compatible TANTO con MySQL como con MariaDB. "ADD COLUMN IF NOT EXISTS"
+--    solo existe en MariaDB; MySQL 8 da error de sintaxis. Como contrapartida,
+--    esta sentencia no es re-ejecutable: si la columna ya existe, dara error
+--    (ignorarlo o quitar la linea si se vuelve a correr la migracion).
 ALTER TABLE usuario
-  ADD COLUMN IF NOT EXISTS fecha_creacion TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
+  ADD COLUMN fecha_creacion TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
 
 -- 2) Limpieza de seguridad: el archivo 001 dejaba un admin con la contrasena en
 --    TEXTO PLANO ('admin123'). Lo borramos para que el unico admin valido sea el
