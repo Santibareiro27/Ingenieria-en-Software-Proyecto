@@ -102,7 +102,7 @@ export default function SeguimientoPage() {
       <div>
         <h2 className="text-3xl font-bold text-foreforegroundound">Seguimiento Operativo</h2>
         <p className="text-muted-foremuted-foregroundound mt-2">
-          Registrar avance físico, asistencia e incidencias (CU10, CU11, CU12, CU14, CU15)
+          Registrar avance físico, asistencia e incidencias
         </p>
       </div>
 
@@ -119,7 +119,7 @@ export default function SeguimientoPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
-                <CardTitle>Registrar Avance Físico (CU10)</CardTitle>
+                <CardTitle>Registrar Avance Físico</CardTitle>
                 <CardDescription>
                   Actualice el estado de ejecución de la obra mediante métricas específicas
                 </CardDescription>
@@ -241,7 +241,7 @@ export default function SeguimientoPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Users className="w-5 h-5" />
-                Registrar Asistencia del Personal (CU11)
+                Registrar Asistencia del Personal
               </CardTitle>
               <CardDescription>
                 Control de trabajadores presentes en cada jornada
@@ -314,7 +314,7 @@ export default function SeguimientoPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <AlertCircle className="w-5 h-5" />
-                Registrar Incidencias (CU12)
+                Registrar Incidencias
               </CardTitle>
               <CardDescription>
                 Documentar problemas, retrasos o situaciones anormales
@@ -411,7 +411,7 @@ export default function SeguimientoPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <CloudRain className="w-5 h-5" />
-                Registrar Eventos Externos (CU14)
+                Registrar Eventos Externos
               </CardTitle>
               <CardDescription>
                 Justificar formalmente extensiones de plazo o retrasos

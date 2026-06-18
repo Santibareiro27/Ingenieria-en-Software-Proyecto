@@ -122,7 +122,7 @@ export default function MaquinariaPage() {
       <div>
         <h2 className="text-3xl font-bold text-foreforegroundound">Gestión de Maquinaria</h2>
         <p className="text-muted-foremuted-foregroundound mt-2">
-          Registrar uso y mantenimiento de equipos (CU16, CU17, CU20, CU23)
+          Registrar uso y mantenimiento de equipos
         </p>
       </div>
 
@@ -138,7 +138,7 @@ export default function MaquinariaPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
-                <CardTitle>Registrar Uso de Maquinaria (CU20)</CardTitle>
+                <CardTitle>Registrar Uso de Maquinaria</CardTitle>
                 <CardDescription>
                   Registrar horas de uso, consumo de combustible y producción
                 </CardDescription>
@@ -226,13 +226,13 @@ export default function MaquinariaPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="p-4 bg-ssecondarycondary rounded-lg">
-                  <h4 className="font-medium text-blue-900 mb-2">CU16: Registrar uso de maquinaria</h4>
+                  <h4 className="font-medium text-blue-900 mb-2">Registrar uso de maquinaria</h4>
                   <p className="text-sm text-blue-800">
                     Permite analizar el rendimiento operativo de cada equipo mediante el registro de horas de uso, combustible y producción.
                   </p>
                 </div>
                 <div className="p-4 bg-ssecocondarydary rounded-lg">
-                  <h4 className="font-medium text-green-900 mb-2">CU20: Encargado de taller</h4>
+                  <h4 className="font-medium text-green-900 mb-2">Encargado de taller</h4>
                   <p className="text-sm text-green-800">
                     El encargado de taller registra el uso de maquinaria para analizar su rendimiento operativo.
                   </p>
@@ -328,7 +328,7 @@ export default function MaquinariaPage() {
         <TabsContent value="mantenimiento" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Historial de Fallas y Reemplazos (CU17, CU23)</CardTitle>
+              <CardTitle>Historial de Fallas y Reemplazos</CardTitle>
               <CardDescription>
                 Consultar problemas recurrentes y mantenimientos realizados
               </CardDescription>

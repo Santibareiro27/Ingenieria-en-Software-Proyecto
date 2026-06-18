@@ -65,7 +65,7 @@ export default function MaterialesPage() {
       <div>
         <h2 className="text-3xl font-bold text-foreground">Gestión de Materiales</h2>
         <p className="text-muted-foreground mt-2">
-          Asignar materiales y registrar consumo (CU6, CU7, CU22)
+          Asignar materiales y registrar consumo
         </p>
       </div>
 
@@ -122,7 +122,7 @@ export default function MaterialesPage() {
         {/* Registrar Consumo */}
         <Card>
           <CardHeader>
-            <CardTitle>Registrar Consumo de Materiales (CU22)</CardTitle>
+            <CardTitle>Registrar Consumo de Materiales</CardTitle>
             <CardDescription>
               Controlar los materiales efectivamente utilizados
             </CardDescription>
@@ -197,7 +197,7 @@ export default function MaterialesPage() {
         {/* Asignar Materiales */}
         <Card>
           <CardHeader>
-            <CardTitle>Asignar Materiales a Obra (CU6)</CardTitle>
+            <CardTitle>Asignar Materiales a Obra</CardTitle>
             <CardDescription>
               Asociar materiales específicos a cada proyecto
             </CardDescription>
@@ -219,7 +219,7 @@ export default function MaterialesPage() {
       {/* Inventario de Materiales */}
       <Card>
         <CardHeader>
-          <CardTitle>Inventario de Materiales (CU7)</CardTitle>
+          <CardTitle>Inventario de Materiales</CardTitle>
           <CardDescription>
             Consultar materiales disponibles y utilizados
           </CardDescription>

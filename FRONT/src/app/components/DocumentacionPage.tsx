@@ -116,14 +116,14 @@ export default function DocumentacionPage() {
       <div>
         <h2 className="text-3xl font-bold text-foreground">Documentación</h2>
         <p className="text-muted-foreground mt-2">
-          Almacenar y consultar documentos de obra (CU8, CU9, CU15)
+          Almacenar y consultar documentos de obra
         </p>
       </div>
 
       {/* Upload Section */}
       <Card>
         <CardHeader>
-          <CardTitle>Almacenar Documentación (CU8)</CardTitle>
+          <CardTitle>Almacenar Documentación</CardTitle>
           <CardDescription>
             Guardar contratos, reportes, planos y fotografías de las obras
           </CardDescription>
@@ -219,7 +219,7 @@ export default function DocumentacionPage() {
       {/* Documents List */}
       <Card>
         <CardHeader>
-          <CardTitle>Consultar Documentación (CU9)</CardTitle>
+          <CardTitle>Consultar Documentación</CardTitle>
           <CardDescription>
             Acceder a archivos y documentación almacenada ({documentosFiltrados.length} documentos)
           </CardDescription>

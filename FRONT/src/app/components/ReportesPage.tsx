@@ -110,7 +110,7 @@ export default function ReportesPage() {
       {/* Revisar Reportes */}
       <Card>
         <CardHeader>
-          <CardTitle>Revisar Reportes (CU19)</CardTitle>
+          <CardTitle>Revisar Reportes</CardTitle>
           <CardDescription>
             Validar la información cargada por el personal de obra
           </CardDescription>
@@ -138,10 +138,10 @@ export default function ReportesPage() {
                   </Button>
                   {reporte.estado === "pendiente" || reporte.estado === "revision" ? (
                     <>
-                      <Button size="sm" variant="ghost" title="Editar reporte (CU20)">
+                      <Button size="sm" variant="ghost" title="Editar reporte">
                         <Edit className="w-4 h-4" />
                       </Button>
-                      <Button size="sm" variant="ghost" className="" style={{ color: "#22c55e" }} title="Aprobar reporte (CU21)">
+                      <Button size="sm" variant="ghost" className="" style={{ color: "#22c55e" }} title="Aprobar reporte">
                         <Check className="w-4 h-4" />
                       </Button>
                       <Button size="sm" variant="ghost" className="" style={{ color: "#ef4444" }} title="Rechazar">
@@ -165,7 +165,7 @@ export default function ReportesPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <BarChart3 className="w-5 h-5" />
-            Generar Informes Comparativos (CU25)
+            Generar Informes Comparativos
           </CardTitle>
           <CardDescription>
             Comparar información entre avance planificado y ejecutado
