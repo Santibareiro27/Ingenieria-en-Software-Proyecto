@@ -41,15 +41,21 @@ final class AvanceController
         $stmt->execute([$planId]);
         $stats = $stmt->fetch();
 
-        $esperado = (float) $plan['avance_esperado_total'];
+        // Calcula el esperado a hoy a partir de las etapas con sus fechas.
+        // Si no hay etapas, usa avance_esperado_total como fallback.
+        $esperado = EtapaPlanificacionController::calcularEsperadoHoy(
+            $this->db,
+            (int) $planId,
+            (float) $plan['avance_esperado_total']
+        );
         $real = (float) ($stats['avance_real'] ?? 0);
 
         $this->json(200, [
-            'avance_esperado' => $esperado,
-            'avance_real' => $real,
-            'desvio_pp' => round($real - $esperado, 2),
-            'total_registros' => (int) $stats['total_registros'],
-            'ultimo_registro' => $stats['ultimo_registro'],
+            'avance_esperado'  => $esperado,
+            'avance_real'      => $real,
+            'desvio_pp'        => round($real - $esperado, 2),
+            'total_registros'  => (int) $stats['total_registros'],
+            'ultimo_registro'  => $stats['ultimo_registro'],
         ]);
     }
 

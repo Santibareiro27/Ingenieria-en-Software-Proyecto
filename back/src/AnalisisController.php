@@ -26,15 +26,44 @@ final class AnalisisController
     {
         $ocultarCostos = $rol === 'PersonalTecnico';
 
-        // Proyectos con su avance esperado (de la planificacion, si existe).
+        // Proyectos con su planificacion (incluye id_planificacion para calcular etapas).
         $stmt = $this->db->query(
             'SELECT p.id_proyecto, p.nombre, p.estado, p.avance, p.presupuesto,
-                    pl.avance_esperado_total
+                    pl.id_planificacion, pl.avance_esperado_total
              FROM proyecto p
              LEFT JOIN planificacion pl ON pl.id_proyecto = p.id_proyecto
              ORDER BY p.nombre'
         );
         $filas = $stmt->fetchAll();
+
+        // Calcular esperado por etapas en una sola query (batch).
+        $planIds   = [];
+        $fallbacks = [];
+        foreach ($filas as $f) {
+            if ($f['id_planificacion'] !== null) {
+                $pid = (int) $f['id_planificacion'];
+                $planIds[]        = $pid;
+                $fallbacks[$pid]  = (float) $f['avance_esperado_total'];
+            }
+        }
+        $esperadosPorPlan = EtapaPlanificacionController::calcularEsperadoBatch($this->db, $planIds, $fallbacks);
+
+        // Presupuesto base total por proyecto (suma de etapas). Solo para no-Tecnico (RF20).
+        $presupuestoBasePorProyecto = [];
+        if (!$ocultarCostos && !empty($planIds)) {
+            $placeholders = implode(',', array_fill(0, count($planIds), '?'));
+            $stmtPB = $this->db->prepare(
+                "SELECT pl.id_proyecto, COALESCE(SUM(ep.presupuesto_base), 0) AS presupuesto_base_total
+                 FROM planificacion pl
+                 JOIN etapa_planificacion ep ON ep.id_planificacion = pl.id_planificacion
+                 WHERE pl.id_planificacion IN ($placeholders)
+                 GROUP BY pl.id_proyecto"
+            );
+            $stmtPB->execute(array_values($planIds));
+            foreach ($stmtPB->fetchAll() as $row) {
+                $presupuestoBasePorProyecto[(int) $row['id_proyecto']] = (float) $row['presupuesto_base_total'];
+            }
+        }
 
         // Materiales excedidos por proyecto (RF12).
         $excedidos = $this->materialesExcedidosPorProyecto();
@@ -44,7 +73,9 @@ final class AnalisisController
         foreach ($filas as $f) {
             $idP = (int) $f['id_proyecto'];
             $avanceReal = (float) $f['avance'];
-            $esperado = $f['avance_esperado_total'] !== null ? (float) $f['avance_esperado_total'] : null;
+            $esperado = $f['id_planificacion'] !== null
+                ? ($esperadosPorPlan[(int) $f['id_planificacion']] ?? null)
+                : null;
             $alertaAvance = $esperado !== null && $avanceReal < $esperado;
             $matExc = $excedidos[$idP] ?? 0;
 
@@ -63,8 +94,11 @@ final class AnalisisController
                 $presupuesto = (float) $f['presupuesto'];
                 $ejecutado = round($presupuesto * $avanceReal / 100, 2);
                 $item['presupuesto'] = $presupuesto;
-                $item['ejecutado'] = $ejecutado;          // RF13 (estimado por avance)
-                $item['diferencia'] = round($presupuesto - $ejecutado, 2);
+                $item['ejecutado']   = $ejecutado;   // RF13 (estimado por avance)
+                $item['diferencia']  = round($presupuesto - $ejecutado, 2);
+                // Presupuesto base planificado (suma de etapas). null si el proyecto no tiene etapas.
+                $pbTotal = $presupuestoBasePorProyecto[$idP] ?? null;
+                $item['presupuesto_base_total'] = $pbTotal;
             }
 
             $proyectos[] = $item;

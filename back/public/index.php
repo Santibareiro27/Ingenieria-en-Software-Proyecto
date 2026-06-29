@@ -23,6 +23,7 @@ require_once __DIR__ . '/../src/InactividadController.php';
 require_once __DIR__ . '/../src/ItemExcedenteController.php';
 require_once __DIR__ . '/../src/AnalisisController.php';
 require_once __DIR__ . '/../src/MaquinariaController.php';
+require_once __DIR__ . '/../src/EtapaPlanificacionController.php';
 
 Env::cargar(__DIR__ . '/../.env');
 
@@ -74,6 +75,7 @@ $inactividad = new InactividadController($db);
 $itemExcedente = new ItemExcedenteController($db);
 $analisis = new AnalisisController($db);
 $maquinaria = new MaquinariaController($db);
+$etapaCtrl = new EtapaPlanificacionController($db);
 
 // --- Parseo de la ruta ---
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?? '/';
@@ -265,6 +267,29 @@ if ($recurso === 'planificacion') {
             case 'PUT':    exigirRol($usuario, ROLES_AVANCE); $avance->actualizar($idAvance, leerCuerpoJson()); break;
             case 'DELETE': exigirRol($usuario, ROLES_AVANCE); $avance->eliminar($idAvance); break;
             default:       responder(405, ['error' => 'Metodo no permitido']);
+        }
+        exit;
+    }
+
+    // /planificacion/etapa/{id}  -> PUT / DELETE de una etapa puntual
+    if (($segmentos[1] ?? null) === 'etapa') {
+        $idEtapa = $segmentos[2] ?? null;
+        if ($idEtapa === null) { responder(404, ['error' => 'Falta el id de la etapa']); exit; }
+        switch ($metodoHttp) {
+            case 'PUT':    exigirRol($usuario, ROLES_GESTION_OBRA); $etapaCtrl->actualizar($idEtapa, leerCuerpoJson()); break;
+            case 'DELETE': exigirRol($usuario, ROLES_GESTION_OBRA); $etapaCtrl->eliminar($idEtapa); break;
+            default:       responder(405, ['error' => 'Metodo no permitido']);
+        }
+        exit;
+    }
+
+    // /planificacion/{planId}/etapas  -> GET / POST etapas
+    if (($segmentos[2] ?? null) === 'etapas') {
+        $planId = $segmentos[1];
+        switch ($metodoHttp) {
+            case 'GET':  $etapaCtrl->listar($planId); break;
+            case 'POST': exigirRol($usuario, ROLES_GESTION_OBRA); $etapaCtrl->crear($planId, leerCuerpoJson()); break;
+            default:     responder(405, ['error' => 'Metodo no permitido']);
         }
         exit;
     }

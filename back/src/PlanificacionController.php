@@ -54,7 +54,7 @@ final class PlanificacionController
         $stmt = $this->db->prepare(
             'INSERT INTO planificacion (avance_esperado_total, fecha_carga, id_proyecto) VALUES (?, ?, ?)'
         );
-        $stmt->execute([(float) $datos['avance_esperado_total'], $datos['fecha_carga'], $idProyecto]);
+        $stmt->execute([(float) ($datos['avance_esperado_total'] ?? 0), $datos['fecha_carga'], $idProyecto]);
 
         $this->json(201, [
             'id_planificacion' => (int) $this->db->lastInsertId(),
@@ -108,10 +108,8 @@ final class PlanificacionController
     private function validar(array $datos, bool $parcial = false): array
     {
         $errores = [];
-        $tiene = isset($datos['avance_esperado_total']);
-        if (!$parcial && !$tiene) {
-            $errores['avance_esperado_total'] = 'Obligatorio';
-        } elseif ($tiene) {
+        // avance_esperado_total ahora es opcional (fallback cuando no hay etapas).
+        if (isset($datos['avance_esperado_total'])) {
             $v = $datos['avance_esperado_total'];
             if (!is_numeric($v) || $v < 0 || $v > 100) {
                 $errores['avance_esperado_total'] = 'Debe ser un numero entre 0 y 100';

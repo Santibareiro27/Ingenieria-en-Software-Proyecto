@@ -39,14 +39,37 @@ CREATE TABLE IF NOT EXISTS proyecto (
 
 -- Planificacion de cada obra (una por proyecto): avance esperado total.
 -- id_proyecto es UNIQUE -> relacion 1 a 1 con proyecto.
+-- avance_esperado_total ahora es FALLBACK: si la obra tiene etapas se calcula
+-- dinamicamente; solo se usa cuando no hay etapas cargadas.
 CREATE TABLE IF NOT EXISTS planificacion (
   id_planificacion      INT AUTO_INCREMENT PRIMARY KEY,
-  avance_esperado_total DECIMAL(5,2) NOT NULL,
+  avance_esperado_total DECIMAL(5,2) NOT NULL DEFAULT 0,
   fecha_carga           DATE NOT NULL,
   id_proyecto           INT NOT NULL UNIQUE,
   CONSTRAINT fk_planificacion_proyecto FOREIGN KEY (id_proyecto)
     REFERENCES proyecto(id_proyecto) ON DELETE CASCADE
 );
+
+-- Etapas de una planificacion (1-a-muchos). Cada etapa aporta peso_porcentual
+-- al avance total. La fraccion de progreso temporal de cada etapa (0-1 segun
+-- fecha_inicio/fecha_fin respecto a hoy) se usa para calcular el esperado a
+-- la fecha, reemplazando el avance_esperado_total estatico.
+-- La suma de peso_porcentual de todas las etapas de una plan debe ser 100.
+CREATE TABLE IF NOT EXISTS etapa_planificacion (
+  id_etapa          INT AUTO_INCREMENT PRIMARY KEY,
+  id_planificacion  INT NOT NULL,
+  nombre            VARCHAR(150) NOT NULL,
+  peso_porcentual   DECIMAL(5,2) NOT NULL,
+  fecha_inicio      DATE NOT NULL,
+  fecha_fin         DATE NOT NULL,
+  orden             INT NOT NULL DEFAULT 0,
+  presupuesto_base  DECIMAL(15,2) NOT NULL DEFAULT 0,
+  CONSTRAINT fk_etapa_plan FOREIGN KEY (id_planificacion)
+    REFERENCES planificacion(id_planificacion) ON DELETE CASCADE
+);
+-- Para bases existentes (ya creadas): correr una sola vez:
+--   ALTER TABLE planificacion ALTER avance_esperado_total SET DEFAULT 0;
+--   ALTER TABLE etapa_planificacion ADD COLUMN presupuesto_base DECIMAL(15,2) NOT NULL DEFAULT 0;
 
 -- Avances fisicos diarios cargados contra una planificacion.
 CREATE TABLE IF NOT EXISTS avance_fisico (
