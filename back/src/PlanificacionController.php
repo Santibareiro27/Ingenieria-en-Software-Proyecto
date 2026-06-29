@@ -58,7 +58,7 @@ final class PlanificacionController
 
         $this->json(201, [
             'id_planificacion' => (int) $this->db->lastInsertId(),
-            'avance_esperado_total' => (float) $datos['avance_esperado_total'],
+            'avance_esperado_total' => (float) ($datos['avance_esperado_total'] ?? 0),
             'fecha_carga' => $datos['fecha_carga'],
             'id_proyecto' => (int) $idProyecto,
         ]);
